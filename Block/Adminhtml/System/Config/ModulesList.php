@@ -151,7 +151,6 @@ class ModulesList extends Field
             }
         }
 
-        //$html .= '</div><div id="modestox-no-results" style="display:none;"><p>' . __("Nothing found") . '</p></div></div>';
         $html .= '</div>
             <div id="modestox-no-results" style="display:none;">
                 <span class="icon">🔍</span>
