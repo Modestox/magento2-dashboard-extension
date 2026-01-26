@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2026 Modestox (https://github.com/modestox). All rights reserved.
+ * License: MIT
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="modestox_tab" translate="label" sortOrder="-10000">
+            <label>Modestox</label>
+        </tab>
+
+        <section id="modestox_dashboard_extension" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Extension List</label>
+            <tab>modestox_tab</tab>
+            <resource>Magento_Config::config</resource>
+
+            <group id="modestox_dashboard_extension_group" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Extension List</label>
+                <field id="modestox_dashboard_extension_modules_list" translate="label" type="label" sortOrder="1"
+                       showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Installed Extensions</label>
+                    <frontend_model>Modestox\DashboardExtension\Block\Adminhtml\System\Config\ModulesList</frontend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
