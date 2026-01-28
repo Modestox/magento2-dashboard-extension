@@ -1,28 +1,17 @@
-# Modestox DashboardExtension for Magento 2
+# Modestox Dashboard Extension for Magento 2
 
-A clean and lightweight Magento 2 extension designed to enhance the admin dashboard experience.
-
-**Tired of hunting for settings in the Admin Panel?**
-**Sick of scrolling endlessly just to find that one configuration?**
-**Use Quick Search to jump directly to the tab you need.**
+A lightweight professional extension to improve Magento 2 Admin navigation. It adds a "Quick Search" feature to the System Configuration, allowing store managers to find settings instantly.
 
 ## Features
-- Custom dashboard configuration settings.
-- Fully compatible with Magento 2.4.8.
-- Developed following Magento Service Contracts and PSR standards.
-
-## Requirements
-- PHP 8.1 / 8.2 / 8.3
-- Magento 2.4.x
+- **Quick Search:** Live filtering for configuration cards and groups.
+- **Deep Linking:** Automatically expands sections and scrolls to the target field when using URL hashes.
+- **UX Improvements:** Clear search button and "No Results" state handling.
+- **Native Integration:** Uses Magento's native RequireJS and jQuery components.
 
 ## Installation
-1. Move the files to `app/code/Modestox/DashboardExtension`.
-2. Run the following commands:
 ```bash
+composer require modestox/module-dashboard-extension
 bin/magento setup:upgrade
-
-bin/magento setup:static-content:deploy -f
-
 ```
 
 ### View

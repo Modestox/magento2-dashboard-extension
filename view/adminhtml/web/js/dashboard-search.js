@@ -2,7 +2,11 @@
  * Copyright © 2026 Modestox (https://github.com/modestox). All rights reserved.
  * License: MIT
  */
-define(['jquery', 'mage/collapsible'], function ($) {
+define([
+    'jquery',
+    'mage/collapsible',
+    'domReady!'
+], function ($) {
     'use strict';
 
     return function (config) {
@@ -36,7 +40,7 @@ define(['jquery', 'mage/collapsible'], function ($) {
                     }
 
                     clearInterval(interval);
-                    $('html, body').animate({ scrollTop: $target.offset().top - 100 }, 400);
+                    $('html, body').animate({scrollTop: $target.offset().top - 100}, 400);
                 }
                 if (attempts++ > 15) clearInterval(interval);
             }, 200);
@@ -52,7 +56,8 @@ define(['jquery', 'mage/collapsible'], function ($) {
                 $cards.show();
                 $groups.show();
                 $mainGrid.show();
-                $noResults.hide(); /** Hide No Results when empty */
+                $noResults.hide();
+                /** Hide No Results when empty */
                 $('.m2-card-groups-wrapper').hide();
                 $('.m2-card-toggle').removeClass('active');
                 $clearBtn.hide();
@@ -114,7 +119,13 @@ define(['jquery', 'mage/collapsible'], function ($) {
             }
         });
 
-        $searchField.on('input', function () { filterGrid($(this).val()); });
-        $clearBtn.on('click', function () { $searchField.val(''); filterGrid(''); $searchField.focus(); });
+        $searchField.on('input', function () {
+            filterGrid($(this).val());
+        });
+        $clearBtn.on('click', function () {
+            $searchField.val('');
+            filterGrid('');
+            $searchField.focus();
+        });
     };
 });

@@ -1,16 +1,25 @@
 {
     "name": "modestox/module-dashboard-extension",
-    "description": "Custom dashboard enhancements for Magento 2",
+    "description": "Quick search admin config extension for Magento 2",
     "type": "magento2-module",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "license": [
-        "OSL-3.0",
-        "AFL-3.0"
+        "MIT"
     ],
     "require": {
         "php": "~8.1.0||~8.2.0||~8.3.0",
-        "magento/framework": "*"
+        "magento/framework": "*",
+        "magento/module-backend": "*",
+        "magento/module-config": "*"
     },
+    "authors": [
+        {
+            "name": "Modestox",
+            "email": "ubuntu.ksm@gmail.com",
+            "homepage": "https://github.com/modestox",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "files": [
             "registration.php"
