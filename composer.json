@@ -2,7 +2,6 @@
     "name": "modestox/module-dashboard-extension",
     "description": "Quick search admin config extension for Magento 2",
     "type": "magento2-module",
-    "version": "1.0.2",
     "license": [
         "MIT"
     ],
