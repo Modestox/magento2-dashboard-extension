@@ -235,3 +235,30 @@ tr[id^="row_modestox_dashboard"] .value .control-value {
 #modestox-search-clear span {
     display: none;
 }
+
+.modestox-nav-header {
+    display: block !important;
+    cursor: pointer !important;
+    background: #f8f8f8 !important;
+    padding: 1.5rem !important;
+    margin-bottom: -1px !important;
+    position: relative !important;
+    transition: background 0.2s ease;
+}
+
+.modestox-nav-header:hover {
+    background: #e3e3e3 !important;
+}
+
+.modestox-nav-header strong {
+    color: #303030 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    font-size: 1.4rem;
+}
+
+.modestox-nav-header.no-arrow::before,
+.modestox-nav-header.no-arrow::after {
+    display: none !important;
+}
+

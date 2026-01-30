@@ -9,123 +9,186 @@ define([
 ], function ($) {
     'use strict';
 
-    return function (config) {
+    return function () {
+
+        /* =========================
+         * Cached DOM elements
+         * ========================= */
         var $searchField = $('#modestox-config-search'),
-            $clearBtn = $('#modestox-search-clear'),
-            $cards = $('.m2-config-card-container'),
-            $groups = $('.m2-tab-group'),
-            $noResults = $('#modestox-no-results'), /** Restored element */
-            $mainGrid = $('#modestox-main-grid');
+            $clearBtn    = $('#modestox-search-clear'),
+            $cards       = $('.m2-config-card-container'),
+            $groups      = $('.m2-tab-group'),
+            $noResults   = $('#modestox-no-results'),
+            $mainGrid    = $('#modestox-main-grid');
+
+        /* =========================
+         * Helpers
+         * ========================= */
 
         /**
-         * Safely expand Magento groups using native click to avoid TypeError
+         * Reset grid to default state
          */
-        function checkUrlHash() {
+        function resetGrid() {
+            $cards.show();
+            $groups.show();
+            $mainGrid.show();
+            $noResults.hide();
+            $clearBtn.hide();
+
+            $('.m2-card-groups-wrapper').hide();
+            $('.m2-card-toggle').removeClass('active');
+        }
+
+        /**
+         * Open section and tab always (independent of previous state)
+         */
+        function openAlways($target) {
+            var $section = $target.closest('.section-config'),
+                $sectionHead = $section.find('.entry-edit-head').first();
+
+            if ($sectionHead.length) {
+                if (!$section.hasClass('active')) {
+                    $sectionHead.trigger('click');
+                }
+            }
+
+            if ($target.length) {
+                setTimeout(function () {
+                    var isOpened = $target.hasClass('open') ||
+                        $target.hasClass('active') ||
+                        $target.hasClass('_active') ||
+                        $target.attr('aria-expanded') === 'true';
+
+                    if (!isOpened) {
+                        $target.get(0).click();
+                    }
+                }, 150);
+            }
+        }
+
+        /**
+         * Handle URL hash (open tab based on #hash)
+         */
+        function handleUrlHash() {
             var hash = window.location.hash;
-            if (!hash || hash.indexOf('-head') === -1) return;
+
+            if (!hash || hash.indexOf('-head') === -1) {
+                return;
+            }
 
             var attempts = 0;
             var interval = setInterval(function () {
                 var $target = $(hash);
+
                 if ($target.length) {
-                    var $parentSection = $target.closest('.section-config');
+                    openAlways($target);
 
-                    if ($parentSection.length && !$parentSection.hasClass('active')) {
-                        var $sectionHead = $parentSection.find('.entry-edit-head').first();
-                        if ($sectionHead.length) $sectionHead.get(0).click();
-                    }
-
-                    if (!$target.hasClass('active') && !$target.hasClass('_active')) {
-                        $target.get(0).click();
-                    }
+                    // Scroll to element
+                    $('html, body').animate({ scrollTop: $target.offset().top - 100 }, 400);
 
                     clearInterval(interval);
-                    $('html, body').animate({scrollTop: $target.offset().top - 100}, 400);
                 }
-                if (attempts++ > 15) clearInterval(interval);
-            }, 200);
+
+                if (++attempts > 20) clearInterval(interval);
+            }, 250);
         }
 
-        checkUrlHash();
-
-        /** Filter logic with No Results handling */
+        /* =========================
+         * Search / Filter logic
+         * ========================= */
         function filterGrid(value) {
-            var query = value.toLowerCase().trim();
+            var query = (value || '').toLowerCase().trim(),
+                MIN_QUERY_LENGTH = 3;
 
-            if (query.length === 0) {
-                $cards.show();
-                $groups.show();
-                $mainGrid.show();
-                $noResults.hide();
-                /** Hide No Results when empty */
-                $('.m2-card-groups-wrapper').hide();
-                $('.m2-card-toggle').removeClass('active');
-                $clearBtn.hide();
+            if (query.length < MIN_QUERY_LENGTH) {
+                resetGrid();
                 return;
             }
 
             $clearBtn.show();
-            var hasAnyResults = false;
+            var hasResults = false;
 
             $cards.each(function () {
-                var term = $(this).data('search-term') || '';
-                if (term.toString().toLowerCase().indexOf(query) > -1) {
-                    $(this).show().find('.m2-card-groups-wrapper').show();
-                    $(this).find('.m2-card-toggle').addClass('active');
-                    hasAnyResults = true;
+                var $card = $(this),
+                    term = ($card.data('search-term') || '').toString().toLowerCase();
+
+                if (term.indexOf(query) !== -1) {
+                    $card
+                        .show()
+                        .find('.m2-card-groups-wrapper')
+                        .show();
+
+                    $card.find('.m2-card-toggle').addClass('active');
+                    hasResults = true;
                 } else {
-                    $(this).hide();
+                    $card.hide();
                 }
             });
 
             $groups.each(function () {
-                var isVisible = $(this).find('.m2-config-card-container:visible').length > 0;
-                $(this).toggle(isVisible);
+                var $group = $(this),
+                    visibleCards = $group.find('.m2-config-card-container:visible').length;
+
+                $group.toggle(visibleCards > 0);
             });
 
-            /** Handle No Results display */
-            if (hasAnyResults) {
-                $mainGrid.show();
-                $noResults.hide();
-            } else {
-                $mainGrid.hide();
-                $noResults.show();
-            }
+            $mainGrid.toggle(hasResults);
+            $noResults.toggle(!hasResults);
         }
 
-        /** Restored: Prevent form submission on Enter key */
+        /* =========================
+         * Events
+         * ========================= */
+
+        // Prevent form submit on Enter
         $searchField.on('keydown', function (e) {
-            if (e.keyCode === 13) {
+            if (e && e.keyCode === 13) {
                 e.preventDefault();
-                return false;
             }
         });
 
-        $(document).on('click', '.m2-card-toggle', function (e) {
-            $(this).toggleClass('active').closest('.m2-config-card-container').find('.m2-card-groups-wrapper').slideToggle(200);
-        });
-
-        $(document).on('click', '.m2-group-link', function (e) {
-            e.preventDefault();
-            var groupId = $(this).data('group-id'),
-                baseUrl = $(this).closest('.m2-config-card-container').find('a.m2-config-card').attr('href');
-            if (baseUrl && groupId) {
-                var newUrl = baseUrl + '#' + groupId + '-head';
-                if (window.location.href === newUrl) {
-                    checkUrlHash();
-                } else {
-                    window.location.href = newUrl;
-                }
-            }
-        });
-
+        // Input search
         $searchField.on('input', function () {
-            filterGrid($(this).val());
+            filterGrid(this.value);
         });
+
+        // Clear search
         $clearBtn.on('click', function () {
-            $searchField.val('');
+            $searchField.val('').focus();
             filterGrid('');
-            $searchField.focus();
         });
+
+        // Toggle card groups
+        $(document).on('click', '.m2-card-toggle', function () {
+            var $card = $(this)
+                .toggleClass('active')
+                .closest('.m2-config-card-container');
+
+            $card.find('.m2-card-groups-wrapper').slideToggle(200);
+        });
+
+        // Navigate to group via link
+        $(document).on('click', '.m2-group-link', function (e) {
+            if (e) e.preventDefault();
+
+            var $card = $(this).closest('.m2-config-card-container'),
+                groupId = $(this).data('group-id'),
+                baseUrl = $card.find('a.m2-config-card').attr('href');
+
+            if (!baseUrl || !groupId) {
+                return;
+            }
+
+            var targetUrl = baseUrl + '#' + groupId + '-head';
+
+            if (window.location.href === targetUrl) {
+                handleUrlHash();
+            } else {
+                window.location.href = targetUrl;
+            }
+        });
+
+        // Initialize hash handling on page load
+        handleUrlHash();
     };
 });
